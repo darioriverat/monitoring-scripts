@@ -6,4 +6,8 @@ This repository contains a collection of bash scripts for monitoring server perf
 
 - 📖 **[System Processes ](docs/system_processes.md)**
 - 📖 **[Disk Usage](docs/disk_usage.md)**
-- 📖 **[Custom Processes](docs/disk_usage.md)**
+- 📖 **[Custom Processes](docs/custom_processes.md)**
+
+## Utilities
+
+- 📖 **[Log Rotation](docs/log_rotation.md)**
