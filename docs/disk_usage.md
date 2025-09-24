@@ -1,31 +1,35 @@
 # Disk Usage Monitor
 
 ## Overview
-The Disk Usage Monitor is a bash script that tracks disk usage statistics for the root filesystem and logs the data to a CSV file. It can be run manually or as a systemd service for continuous monitoring.
+The Disk Usage Monitor is a bash script that monitors disk usage statistics for the root filesystem.
+It can be run manually or as a systemd service for continuous monitoring.
+
+**Log Format:**
+```
+[2025-09-24 21:42:47] DISK_USAGE=51% TOTAL_SPACE=7.7G USED_SPACE=3.7G AVAILABLE_SPACE=3.7G
+[2025-09-24 21:43:47] DISK_USAGE=51% TOTAL_SPACE=7.7G USED_SPACE=3.7G AVAILABLE_SPACE=3.7G
+```
 
 ## Script Details
-- **File**: `disk_usage.sh`
+- **File**: `scripts/disk_usage.sh`
 - **Purpose**: Monitor and log disk usage statistics
-- **Output**: Console display and CSV logging
-- **Log Location**: `/var/log/monitoring/disk_usage/disk_usage.csv`
+- **Log Location**: `/var/log/monitoring/disk_usage/disk_usage.log`
 
 ## Features
 - Real-time disk usage monitoring
-- CSV data logging with timestamps
 - Detailed disk statistics (total, used, available space)
-- Automatic CSV header creation
-- Console output for immediate feedback
 
 ## Usage
 
 ### Manual Execution
 ```bash
 # Make the script executable
-chmod +x disk_usage.sh
+chmod +x scripts/disk_usage.sh
 
 # Run the script
-./disk_usage.sh
+./scripts/disk_usage.sh
 ```
+
 
 ### Output Example
 ```
@@ -37,20 +41,28 @@ Available space: 50G
 Disk usage data appended to /var/log/monitoring/disk_usage/disk_usage.csv
 ```
 
-### CSV Output Format
-The script creates a CSV file with the following columns:
-- `Timestamp`: Date and time of the measurement
-- `Disk_Usage_%`: Percentage of disk space used
-- `Total_Space`: Total disk space available
-- `Used_Space`: Amount of disk space currently used
-- `Available_Space`: Amount of disk space available
+### Log Output Format
+
+```
+[2025-09-24 21:42:47] DISK_USAGE=51% TOTAL_SPACE=7.7G USED_SPACE=3.7G AVAILABLE_SPACE=3.7G
+[2025-09-24 21:43:47] DISK_USAGE=51% TOTAL_SPACE=7.7G USED_SPACE=3.7G AVAILABLE_SPACE=3.7G
+```
 
 ## Systemd Service Setup
 
 ### 1. Install the Script
 ```bash
+# Create the monitoring directory structure
+sudo mkdir -p /var/log/monitoring/disk_usage
+
+# Set appropriate permissions
+sudo chown root:root /var/log/monitoring
+sudo chmod 755 /var/log/monitoring
+
 # Copy script to system location
-sudo cp disk_usage.sh /usr/bin/disk_usage.sh
+sudo cp scripts/disk_usage.sh /usr/bin/
+
+# Make the script executable
 sudo chmod +x /usr/bin/disk_usage.sh
 ```
 
@@ -86,9 +98,6 @@ sudo systemctl enable disk-monitor.service
 
 # Start the service
 sudo systemctl start disk-monitor.service
-
-# Check service status
-sudo systemctl status disk-monitor.service
 ```
 
 ## Service Management
@@ -119,24 +128,3 @@ The service runs every minute by default. To change the interval, modify the `sl
 ExecStart=/bin/bash -c 'while true; do /usr/bin/disk_usage.sh; sleep 600; done'
 ```
 This example changes the interval to 10 minutes (600 seconds).
-
-## Log File Management
-The CSV log file is stored at `/var/log/monitoring/disk_usage/disk_usage.csv`. Consider implementing log rotation to prevent the file from growing too large:
-
-```bash
-# Create logrotate configuration
-sudo vim /etc/logrotate.d/disk-usage
-```
-
-Add the following configuration:
-```
-/var/log/monitoring/disk_usage/disk_usage.csv {
-    daily
-    rotate 30
-    compress
-    delaycompress
-    missingok
-    notifempty
-    create 644 root root
-}
-```
