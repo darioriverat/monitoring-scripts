@@ -3,14 +3,17 @@
 To prevent log files from growing too large, consider setting up log rotation with monitoring pause functionality:
 
 ## 1. Create Monitoring Control Script
+
+A single script to start and stop all monitoring services helps simplify management and prevents log loss.
+
 ```bash
 sudo vim /usr/bin/monitoring-control.sh
 ```
 
-Add the following content:
-
 > [!NOTE]
-> The following script allows to setup multiple monitoring script. Ensure it manages the target script(s) only.
+> The following script allows you to set up multiple monitoring scripts. Make sure it manages only the intended target script(s).
+
+Add the following content:
 
 ```bash
 #!/bin/bash
@@ -56,7 +59,6 @@ Add the following configuration:
     daily
     rotate 30
     compress
-    delaycompress
     missingok
     notifempty
     create 644 root root
